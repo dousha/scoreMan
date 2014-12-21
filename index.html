@@ -1,0 +1,49 @@
+﻿<!--
+DOCTYPE: html/html: index.html
+Author: dousha@github.com
+Encoding: UTF-8
+Tabstop: 4
+-->
+<!--
+成就达成：开发者的寂寞！
+彩蛋代码：./easterEgg.asp?code=developer
+你永远不知道我会有多么讨厌IE
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+			<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+			<script>
+				
+			</script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					学生成绩查询系统
+				</div>
+				<form action="query.asp" method="post">
+					<div class="panel-body">
+						<p>姓名</p>
+						<input type="text" id="name" name="name" autocomplete="off">
+						<p>学号</p>
+						<input type="text" id="id" name="id" autocomplete="off">
+						<p>密码（教师填写，没有请无视）<p>
+						<input type="password" id="pwd" name="pwd"><br>
+						<button type="submit">查询</button>
+						<button type="reset">清空</button>
+						<p class="text-warning">如果你在使用公用电脑（比如学校电脑室的电脑），请不要保存密码！</p>
+						<p class="text-primary">请<span class="text-danger">不要</span>使用<del>IE</del>以获得最佳浏览效果</p>
+					</div>
+				</form>
+				<div class="panel-footer">
+					<a href="mailto://dsstudio@qq.com">意见反馈</a>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
