@@ -17,6 +17,7 @@ Tabstop: 4
 					var id = document.getElementById("id").value;
 					var subject = document.getElementById("subject").value;
 					var newScore = document.getElementById("newScore").value;
+					var postStr = "name=" + name + "&id=" + id + "&subject=" + subject + "&newScore=" + newScore;
 					var ajaxHandler;
 					if(window.XMLHttpRequest){
 						ajaxHandler = new XMLHttpRequest(); // general ajax object
@@ -24,25 +25,39 @@ Tabstop: 4
 					else{
 						ajaxHandler = new ActiveXObject("Microsoft.XMLHttp"); // micros**t's IE5/6 support
 					}
+					ajaxHandler.open("POST", "modifier.asp", true);
+					ajaxHandler.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+					ajaxHandler.send(postStr);
 					ajaxHandler.onreadystatechange = function(){
 						if(ajaxHandler.readyState == 4 && ajaxHandler.status == 200){
 							document.getElementById("message").innerHTML = ajaxHandler.responseText;
+							// message display
 						}
+						
 					}
-					ajaxHandler.open("POST", "modifier.asp", true);
-					ajaxHandler.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-					ajaxHandler.send();
 				}
 			</script>
 	</head>
 	<body>
 		<div class="container">
 		<%
+			' To the programmer who read this code,
+			' You are the choosen one who is breav and restless to fix the CODE OF HELL.
+			' Never {
+			'		 give up,
+			'		 be disappointed to yourself,
+			'		 escape,
+			'		 cry,
+			'		 say 'goodbye',
+			'		 harm yourself by lying.
+			'		}
 			codepage="65001"
 			response.charset = "utf-8"
 			dim name
 			dim id
 			dim pwd
+			dim fs, f
+			set fo = server.createobject("Scripting.FileSystemObject") 'FSO...Not sure if it works
 			name = request.form("name")
 			id = request.form("id")
 			pwd = request.form("pwd")
@@ -99,6 +114,9 @@ Tabstop: 4
 				end if
 				response.write("</div><div class=""panel-footer""><a href=""report.html"">反馈登分错误</a></div>")
 				rs.close()
+				set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
+				obj.write "[INFO] " & sql & vbcrlf
+				obj.close()
 			else
 				' Teacher managing mode
 				response.expires = 5
@@ -107,9 +125,13 @@ Tabstop: 4
 				conn.open "driver={microsoft access driver (*.mdb)};dbq=" & server.MapPath("database\login.mdb")
 				set rs  = CreateObject("ADODB.recordset")
 				rs.Open sql, conn, 1, 1
-				' Now query should completed
+				' Now query should be completed
 				if rs.bof AND rs.eof then
 					response.write("登入失败！请检查您的姓名和密码是否正确！")
+					set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
+					obj.write "[INFO] " & sql
+					obj.write "[WARN] 该次登录失败!"
+					obj.close()
 				else
 					response.write("<div class=""panel panel-primary""><div class=""panel-heading"">")
 					response.write("敬爱的" & name & "老师，欢迎登入学生成绩管理页面")
@@ -122,7 +144,7 @@ Tabstop: 4
 					response.write("<hr>")
 					response.write("<div class=""panel panel-default""><div class=""panel-heading"">")
 					response.write("更改学生成绩</div><div class=""panel-body"">")
-					response.write("<form method=""post"" action=""modifier.asp""><span>学号:</span>")
+					response.write("<span>学号:</span>")
 					response.write("<input id=""id"" name=""id""><br><span>")
 					response.write("姓名:</span><input id=""name"" name=""name""><br>")
 					response.write("<select id=""subject"" name=""subject"">")
@@ -138,13 +160,16 @@ Tabstop: 4
 					response.write("<option value=""pe"">体育</option>")
 					response.write("<option value=""misc"">杂项</option>")
 					response.write("</select>更改为:<input id=""newScore"" name=""newScore"">")
-					response.write("<button onclick=""modify()"">更改</button></form>")
+					response.write("<button onclick=""modify()"">更改</button>")
 					response.write("<div id=""message""></div>")
 					response.write("</div>")
 					response.write("</div><div class=""panel-footer"">")
 					response.write("<a href=""../example.xls"">下载示范Excel表(example.xls)</a><br>")
 					response.write("<a href=""./help.html"">使用帮助</a><br>")
-					response.write("<p class=""text-danger"">上传过程中请勿关闭页面。操作不可撤销</p></div>")
+					response.write("<p class=""text-danger"">上传过程中请勿关闭页面。操作不可撤销！</p></div>")
+					set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
+					obj.write "[INFO] " & sql & vbcrlf
+					obj.close()
 				end if
 				rs.close()
 			end if
