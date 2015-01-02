@@ -60,6 +60,9 @@ Tabstop: 4
 			set conn2 = CreateObject("ADODB.Connection")
 			conn2.provider = "Microsoft.JET.OLEDB.4.0"
 			conn2.open(server.mappath("database\unidata.mdb")) ' Student database
+			set rs2 = server.createobject("ADODB.Recordset") ' and it's record set
+			qsql = "SELECT * FROM unidata"
+			rs2.open qsql, conn2, 1, 1
 			' DBG
 			rs.movefirst
 			response.write("<div class=""panel panel-primary""><div class=""panel-heading"">")
@@ -68,78 +71,96 @@ Tabstop: 4
 			set fo = server.createobject("Scripting.FileSystemObject") 'FSO...Not sure if it works
 			set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
 			do while not rs.eof
-				usql = "INSERT INTO unidata "
-				inserts = "(ID,class,namee,"
-				values = "(" & rs("考号") & ",'" & rs("班级") & "','" & rs("姓名") & "',"
-				response.write("<tr>")
-				response.write("<td>" & rs("考号") & "</td>")
-				response.write("<td>" & rs("班级") & "</td>")
-				response.write("<td>" & rs("姓名") & "</td>")
-				' if null ignore
-				if isnull(rs("总分")) = false then
-					inserts = inserts & "total,"
-					values = values & rs("总分") & ","
-					response.write("<td>" & rs("总分") & "</td>")
+				' if dup ignore
+				needInsert = true
+				if not rs2.bof and rs2.eof then
+					rs2.movefirst
 				end if
-				if isnull(rs("数学")) = false then
-					inserts = inserts & "math,"
-					values = values & rs("数学") & ","
-					response.write("<td>" & rs("数学") & "</td>")
+				do while not rs2.eof and needInsert = true
+					if rs2("ID") = rs("考号") then
+						needInsert = false
+					end if
+					rs2.movenext
+				loop
+				if needInsert = true then
+					usql = "INSERT INTO unidata "
+					inserts = "(ID,class,namee,"
+					values = "(" & rs("考号") & ",'" & rs("班级") & "','" & rs("姓名") & "',"
+					response.write("<tr>")
+					response.write("<td>" & rs("考号") & "</td>")
+					response.write("<td>" & rs("班级") & "</td>")
+					response.write("<td>" & rs("姓名") & "</td>")
+					' if null ignore
+					if isnull(rs("总分")) = false then
+						inserts = inserts & "total,"
+						values = values & rs("总分") & ","
+						response.write("<td>" & rs("总分") & "</td>")
+					end if
+					if isnull(rs("数学")) = false then
+						inserts = inserts & "math,"
+						values = values & rs("数学") & ","
+						response.write("<td>" & rs("数学") & "</td>")
+					end if
+					if isnull(rs("语文")) = false then
+						inserts = inserts & "chi,"
+						values = values & rs("语文") & ","
+						response.write("<td>" & rs("语文") & "</td>")
+					end if
+					if isnull(rs("外语")) = false then
+						inserts = inserts & "lang,"
+						values = values & rs("外语") & ","
+						response.write("<td>" & rs("外语") & "</td>")
+					end if
+					if isnull(rs("政治")) = false then
+						inserts = inserts & "soc,"
+						values = values & rs("政治") & ","
+						response.write("<td>" & rs("政治") & "</td>")
+					end if
+					if isnull(rs("历史")) = false then
+						inserts = inserts & "hist,"
+						values = values & rs("历史") & ","
+						response.write("<td>" & rs("历史") & "</td>")
+					end if
+					if isnull(rs("地理")) = false then
+						inserts = inserts & "geo,"
+						values = values & rs("地理") & ","
+						response.write("<td>" & rs("地理") & "</td>")
+					end if
+					if isnull(rs("物理")) = false then
+						inserts = inserts & "phy,"
+						values = values & rs("物理") & ","
+						response.write("<td>" & rs("物理") & "</td>")
+					end if
+					if isnull(rs("化学")) = false then
+						inserts = inserts & "chem,"
+						values = values & rs("化学") & ","
+						response.write("<td>" & rs("化学") & "</td>")
+					end if
+					if isnull(rs("生物")) = false then
+						inserts = inserts & "bio,"
+						values = values & rs("生物") & ","
+						response.write("<td>" & rs("生物") & "</td>")
+					end if
+					response.write("</tr>")
+					' trim
+					inserts = left(inserts, len(inserts) - 1)
+					inserts = inserts & ")"
+					values = left(values, len(values) - 1)
+					values = values & ")"
+					usql = usql & inserts & " VALUES " & values
+					conn2.execute(usql)
+					if not isnull(usql) then
+						obj.write "[MODI] " & usql & vbcrlf
+					end if
 				end if
-				if isnull(rs("语文")) = false then
-					inserts = inserts & "chi,"
-					values = values & rs("语文") & ","
-					response.write("<td>" & rs("语文") & "</td>")
-				end if
-				if isnull(rs("外语")) = false then
-					inserts = inserts & "lang,"
-					values = values & rs("外语") & ","
-					response.write("<td>" & rs("外语") & "</td>")
-				end if
-				if isnull(rs("政治")) = false then
-					inserts = inserts & "soc,"
-					values = values & rs("政治") & ","
-					response.write("<td>" & rs("政治") & "</td>")
-				end if
-				if isnull(rs("历史")) = false then
-					inserts = inserts & "hist,"
-					values = values & rs("历史") & ","
-					response.write("<td>" & rs("历史") & "</td>")
-				end if
-				if isnull(rs("地理")) = false then
-					inserts = inserts & "geo,"
-					values = values & rs("地理") & ","
-					response.write("<td>" & rs("地理") & "</td>")
-				end if
-				if isnull(rs("物理")) = false then
-					inserts = inserts & "phy,"
-					values = values & rs("物理") & ","
-					response.write("<td>" & rs("物理") & "</td>")
-				end if
-				if isnull(rs("化学")) = false then
-					inserts = inserts & "chem,"
-					values = values & rs("化学") & ","
-					response.write("<td>" & rs("化学") & "</td>")
-				end if
-				if isnull(rs("生物")) = false then
-					inserts = inserts & "bio,"
-					values = values & rs("生物") & ","
-					response.write("<td>" & rs("生物") & "</td>")
-				end if
-				response.write("</tr>")
-				' trim
-				inserts = left(inserts, len(inserts) - 1)
-				inserts = inserts & ")"
-				values = left(values, len(values) - 1)
-				values = values & ")"
-				usql = usql & inserts & " VALUES " & values
-				conn2.execute(usql)
-				obj.write "[MODI] " & usql & vbcrlf
-				obj.close()
 				rs.movenext
 			loop
 			response.write("</table><div align=""right"">")
+			response.write("您可以单击“返回”回到管理页面")
 			response.write("</div>")
+			set conn = nothing
+			set conn2 = nothing
+			obj.close
 		%>
 		</div>
 	</body>

@@ -33,7 +33,10 @@ Tabstop: 4
 							document.getElementById("message").innerHTML = ajaxHandler.responseText;
 							// message display
 						}
-						
+						else if(ajaxHandler.status != 200){
+							// which means something goes wrong
+							document.getElementById("message").innerHTML = "错误代码" + ajajaxHandler.status + ajaxHandler.responseText;
+						}
 					}
 				}
 			</script>

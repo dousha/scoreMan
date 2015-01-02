@@ -24,7 +24,6 @@ Tabstop: 4
 			conn.provider = "Microsoft.JET.OLEDB.4.0"
 			conn.open(server.mappath("database\unidata.mdb")) ' Student database
 			conn.execute(sql)
-			response.write(sql)
 			response.write("更改已提交")
 			set fo = server.createobject("Scripting.FileSystemObject") 'FSO...Not sure if it works
 			set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
