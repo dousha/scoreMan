@@ -28,6 +28,10 @@ Tabstop: 4
 			response.charset = "utf-8"
 			formsize = request.totalbytes
 			formdata = request.binaryread(request.totalbytes)
+			if isnull(formsize) then
+				response.write("未提交文件")
+				response.end()
+			end if
 			bcrlf = chrB(13) & chrB(10)
 			divider = leftB(formdata, clng(instrb(formdata, bcrlf)) - 1)
 			position = instrb(formdata, bcrlf & bcrlf) + 4
@@ -71,7 +75,7 @@ Tabstop: 4
 			set fo = server.createobject("Scripting.FileSystemObject") 'FSO...Not sure if it works
 			set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
 			do while not rs.eof
-				' if dup ignore
+				' if dup change to update
 				needInsert = true
 				if not rs2.bof and rs2.eof then
 					rs2.movefirst
@@ -83,75 +87,124 @@ Tabstop: 4
 					rs2.movenext
 				loop
 				if needInsert = true then
+					' INSERT MODE
 					usql = "INSERT INTO unidata "
 					inserts = "(ID,class,namee,"
 					values = "(" & rs("考号") & ",'" & rs("班级") & "','" & rs("姓名") & "',"
-					response.write("<tr>")
-					response.write("<td>" & rs("考号") & "</td>")
-					response.write("<td>" & rs("班级") & "</td>")
-					response.write("<td>" & rs("姓名") & "</td>")
-					' if null ignore
-					if isnull(rs("总分")) = false then
+				else
+					' UPDATE MODE
+					usql = "UPDATE unidata SET "
+				end if
+				response.write("<tr>")
+				response.write("<td>" & rs("考号") & "</td>")
+				response.write("<td>" & rs("班级") & "</td>")
+				response.write("<td>" & rs("姓名") & "</td>")
+				' if null ignore
+				if isnull(rs("总分")) = false then
+					if needInsert = true then
 						inserts = inserts & "total,"
 						values = values & rs("总分") & ","
-						response.write("<td>" & rs("总分") & "</td>")
+					else
+						usql = usql & "total=" & rs("总分") & ","
 					end if
-					if isnull(rs("数学")) = false then
+					response.write("<td>" & rs("总分") & "</td>")
+				end if
+				if isnull(rs("数学")) = false then
+					if needInsert = true then
 						inserts = inserts & "math,"
 						values = values & rs("数学") & ","
-						response.write("<td>" & rs("数学") & "</td>")
+					else
+						usql = usql & "math=" & rs("数学") & ","
 					end if
-					if isnull(rs("语文")) = false then
+					response.write("<td>" & rs("数学") & "</td>")
+				end if
+				if isnull(rs("语文")) = false then
+					if needInsert = true then
 						inserts = inserts & "chi,"
 						values = values & rs("语文") & ","
-						response.write("<td>" & rs("语文") & "</td>")
+					else
+						usql = usql & "chi=" & rs("语文") & ","
 					end if
-					if isnull(rs("外语")) = false then
+					response.write("<td>" & rs("语文") & "</td>")
+				end if
+				if isnull(rs("外语")) = false then
+					if needInsert = true then
 						inserts = inserts & "lang,"
 						values = values & rs("外语") & ","
-						response.write("<td>" & rs("外语") & "</td>")
+					else
+						usql = usql & "lang=" & rs("外语") & ","
 					end if
-					if isnull(rs("政治")) = false then
+					response.write("<td>" & rs("外语") & "</td>")
+				end if
+				if isnull(rs("政治")) = false then
+					if needInsert = true then
 						inserts = inserts & "soc,"
 						values = values & rs("政治") & ","
-						response.write("<td>" & rs("政治") & "</td>")
+					else
+						usql = usql & "soc=" & rs("政治") & ","
 					end if
-					if isnull(rs("历史")) = false then
+					response.write("<td>" & rs("政治") & "</td>")
+				end if
+				if isnull(rs("历史")) = false then
+					if needInsert = true then
 						inserts = inserts & "hist,"
 						values = values & rs("历史") & ","
-						response.write("<td>" & rs("历史") & "</td>")
+					else
+						usql = usql & "hist=" & rs("历史") & ","
 					end if
-					if isnull(rs("地理")) = false then
+					response.write("<td>" & rs("历史") & "</td>")
+				end if
+				if isnull(rs("地理")) = false then
+					if needInsert = true then
 						inserts = inserts & "geo,"
 						values = values & rs("地理") & ","
-						response.write("<td>" & rs("地理") & "</td>")
+					else
+						usql = usql & "geo=" & rs("地理") & ","
 					end if
-					if isnull(rs("物理")) = false then
+					response.write("<td>" & rs("地理") & "</td>")
+				end if
+				if isnull(rs("物理")) = false then
+					if needInsert = true then
 						inserts = inserts & "phy,"
 						values = values & rs("物理") & ","
-						response.write("<td>" & rs("物理") & "</td>")
+					else
+						usql = usql & "phy=" & rs("物理") & ","
 					end if
-					if isnull(rs("化学")) = false then
+					response.write("<td>" & rs("物理") & "</td>")
+				end if
+				if isnull(rs("化学")) = false then
+					if needInsert = true then
 						inserts = inserts & "chem,"
 						values = values & rs("化学") & ","
-						response.write("<td>" & rs("化学") & "</td>")
+					else
+						usql = usql & "chem=" & rs("化学") & ","
 					end if
-					if isnull(rs("生物")) = false then
+					response.write("<td>" & rs("化学") & "</td>")
+				end if
+				if isnull(rs("生物")) = false then
+					if needInsert = true then
 						inserts = inserts & "bio,"
 						values = values & rs("生物") & ","
-						response.write("<td>" & rs("生物") & "</td>")
+					else
+						usql = usql & "bio=" & rs("生物") & ","
 					end if
-					response.write("</tr>")
-					' trim
+					response.write("<td>" & rs("生物") & "</td>")
+				end if
+				response.write("</tr>")
+				' trim
+				if needInsert = true then
 					inserts = left(inserts, len(inserts) - 1)
 					inserts = inserts & ")"
 					values = left(values, len(values) - 1)
 					values = values & ")"
 					usql = usql & inserts & " VALUES " & values
-					conn2.execute(usql)
-					if not isnull(usql) then
-						obj.write "[MODI] " & usql & vbcrlf
-					end if
+				else
+					usql = left(usql, len(usql) - 1)
+					usql = usql & " WHERE ID=" & rs("考号")
+				end if
+				conn2.execute(usql)
+				if not isnull(usql) then
+					obj.write "[MODI] " & usql & vbcrlf
 				end if
 				rs.movenext
 			loop
