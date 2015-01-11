@@ -74,17 +74,20 @@ Tabstop: 4
 				' mv cdb \v
 				set conn = CreateObject("ADODB.Connection")
 				conn.provider = "Microsoft.JET.OLEDB.4.0"
-				conn.open(server.mappath("database\unidata.mdb")) ' Student database
+				conn.open(server.mappath("..\database\unidata.mdb")) ' Student database
 				set rs = CreateObject("ADODB.recordset")
 				rs.Open sql, conn
 				' Now query should be completed
 				' and print out the panel
-				response.write("<div class=""panel panel-primary""><div class=""panel-heading"">")
-				response.write(rs("class") & "班的" & name & "同学, 最近一次考试的成绩如下")
-				response.write("</div><div class=""panel-body"">")
 				if rs.bof AND rs.eof then
+					response.write("<div class=""panel panel-primary""><div class=""panel-heading"">")
+					response.write("学生成绩查询")
+					response.write("</div><div class=""panel-body"">")
 					response.write("没有查询到成绩，名字或者学号是不是输错了？")
 				else
+					response.write("<div class=""panel panel-primary""><div class=""panel-heading"">")
+					response.write(rs("class") & "班的" & name & "同学, 最近一次考试的成绩如下")
+					response.write("</div><div class=""panel-body"">")
 					response.write("<table class=""table"">")
 					response.write("<tr><td>项目</td><td>值</td></tr>")
 					response.write("<tr><td>总分</td><td>" & rs("total") & "</td>")
@@ -117,7 +120,7 @@ Tabstop: 4
 				end if
 				response.write("</div><div class=""panel-footer""><a href=""report.html"">反馈登分错误</a></div>")
 				rs.close()
-				set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
+				set obj = fo.opentextfile(server.mappath("..\log\log.log"), 8, true)
 				obj.write "[INFO] " & sql & vbcrlf
 				obj.close()
 			else
@@ -125,13 +128,13 @@ Tabstop: 4
 				response.expires = 5
 				sql = "SELECT * FROM passwd WHERE namee = '" & name & "' AND pwd = '" & pwd & "'"
 				set conn = CreateObject("ADODB.Connection")
-				conn.open "driver={microsoft access driver (*.mdb)};dbq=" & server.MapPath("database\login.mdb")
+				conn.open "driver={microsoft access driver (*.mdb)};dbq=" & server.MapPath("..\database\login.mdb")
 				set rs  = CreateObject("ADODB.recordset")
 				rs.Open sql, conn, 1, 1
 				' Now query should be completed
 				if rs.bof AND rs.eof then
 					response.write("登入失败！请检查您的姓名和密码是否正确！")
-					set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
+					set obj = fo.opentextfile(server.mappath("..\log\log.log"), 8, true)
 					obj.write "[INFO] " & sql
 					obj.write "[WARN] 该次登录失败!"
 					obj.close()
@@ -170,7 +173,7 @@ Tabstop: 4
 					response.write("<a href=""../example.xls"">下载示范Excel表(example.xls)</a><br>")
 					response.write("<a href=""./help.html"">使用帮助</a><br>")
 					response.write("<p class=""text-danger"">上传过程中请勿关闭页面。操作不可撤销！</p></div>")
-					set obj = fo.opentextfile(server.mappath("log\log.log"), 8, true)
+					set obj = fo.opentextfile(server.mappath("..\log\log.log"), 8, true)
 					obj.write "[INFO] " & sql & vbcrlf
 					obj.close()
 				end if

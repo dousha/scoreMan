@@ -46,7 +46,7 @@ Tabstop: 4
 			dr.write formdata
 			dr.position = position - 1
 			dr.copyto dr1, filesize
-			dr1.savetofile server.mappath("database\u") & formatdatetime(now, 1) & ".xls", 2
+			dr1.savetofile server.mappath("..\database\u") & formatdatetime(now, 1) & ".xls", 2
 			set dr = nothing
 			set dr1 = nothing
 			' I have to use this stupid way to fix errors (missing 00 00)
